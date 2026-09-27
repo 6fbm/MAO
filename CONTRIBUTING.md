@@ -11,6 +11,8 @@ cd MAO
 ./install.sh                     # Windows: install.cmd
 ```
 
+(`./start.sh` does the same and launches the program straight after.)
+
 This creates `.venv`, installs the package in editable mode with the dev extras, and generates your
 local `config/` from `src/mao/config/templates/`. Your `config/` is not tracked by git — change the
 templates when you want a default to change for everyone.
@@ -38,8 +40,8 @@ The offline demo exercises the whole PLAN→RUN pipeline with simulated model re
 files, real test runs:
 
 ```bash
-./mao.sh demo-workspace demo-project
-./mao.sh --demo --workspace demo-project
+./start.sh demo-workspace demo-project
+./start.sh --demo --workspace demo-project
 ```
 
 ## Conventions

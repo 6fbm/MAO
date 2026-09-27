@@ -47,24 +47,28 @@ simulates the model replies — tools, files and tests are real even there.
 
 ## Installation
 
-Clone the repository, then:
+Clone the repository, then one command does everything - it sets the environment up on the first run
+and starts the program on every run after that:
 
 **Linux / macOS**
 
 ```bash
 cd MAO
-./install.sh
+./start.sh
 ```
 
 **Windows**
 
 ```bat
 cd MAO
-install.cmd
+start.bat
 ```
 
-The script creates `.venv`, installs the package and generates the configuration files in `config/`.
-Manual install:
+Arguments are passed straight through, so `./start.sh doctor` works as well.
+
+If you would rather keep the two steps apart: `./install.sh` (`install.cmd`) creates `.venv`, installs
+the package and generates the configuration files in `config/`; `./mao.sh` (`mao.cmd`) starts the
+program. Manual install:
 
 ```bash
 python -m venv .venv
@@ -72,12 +76,10 @@ python -m venv .venv
 .venv/bin/python -m mao init
 ```
 
-Start with `./mao.sh` (`mao.cmd` on Windows), or `python -m mao` from the activated environment.
-
 ## Quick start
 
 ```text
-./mao.sh
+./start.sh
 mao › /workspace ~/projects/my-project
 mao › /providers key add openai          (the key is prompted hidden and stored encrypted)
 mao › /plan Analyse my project and find out how we can improve performance.
@@ -93,8 +95,8 @@ Alternatively, provide API keys as environment variables — the names are liste
 ### Offline demo without API keys
 
 ```bash
-./mao.sh demo-workspace demo-project
-./mao.sh --demo --workspace demo-project
+./start.sh demo-workspace demo-project
+./start.sh --demo --workspace demo-project
 mao › /plan Fix all errors in the calculator
 ```
 
@@ -104,10 +106,10 @@ and all logs and sessions are created exactly as in normal operation.
 ### Single commands without the interactive shell
 
 ```bash
-./mao.sh plan "Fix the failing tests" --workspace ~/projects/x
-./mao.sh run                      # execute/resume the last session
-./mao.sh -c "/sessions" -c "/logs errors --tail 50"
-./mao.sh doctor                   # check environment, configuration and providers
+./start.sh plan "Fix the failing tests" --workspace ~/projects/x
+./start.sh run                    # execute/resume the last session
+./start.sh -c "/sessions" -c "/logs errors --tail 50"
+./start.sh doctor                 # check environment, configuration and providers
 ```
 
 ## Commands
