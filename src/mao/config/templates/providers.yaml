@@ -189,9 +189,181 @@ providers:
         capabilities: [tools, coding, web_search, long_context, json]
         pricing: {input_per_mtok: 0.30, output_per_mtok: 2.50}
 
+  # --------------------------------------------------------------------------
+  #  OpenAI-compatible providers. Endpoints and prices checked 2026-09-27;
+  #  refresh model ids and limits with  /models discover <provider>.
+  #  Prices are USD per 1M tokens.
+  # --------------------------------------------------------------------------
+
+  deepseek:
+    type: openai_chat
+    display_name: DeepSeek
+    base_url: https://api.deepseek.com/v1
+    api_keys: {env: [DEEPSEEK_API_KEY]}
+    auto_discover: true
+    default_model: deepseek-v4-pro
+    # Off-peak prices. Peak hours (01:00-04:00 and 06:00-10:00 UTC on weekdays)
+    # cost twice as much - the estimate below is therefore a lower bound.
+    models:
+      deepseek-v4-pro:
+        context_window: 1000000
+        max_output_tokens: 32768
+        tier: strong
+        capabilities: [tools, coding, reasoning, long_context, json]
+        pricing: {input_per_mtok: 0.66, output_per_mtok: 1.98}
+      deepseek-flash:
+        context_window: 1000000
+        max_output_tokens: 32768
+        tier: fast
+        capabilities: [tools, coding, vision, long_context, json]
+        pricing: {input_per_mtok: 0.15, output_per_mtok: 0.60, cached_input_per_mtok: 0.003}
+
+  qwen:
+    type: openai_chat
+    display_name: Qwen (Alibaba Model Studio)
+    # International endpoint. China mainland: https://dashscope.aliyuncs.com/compatible-mode/v1
+    base_url: https://dashscope-intl.aliyuncs.com/compatible-mode/v1
+    api_keys: {env: [DASHSCOPE_API_KEY, QWEN_API_KEY]}
+    auto_discover: true
+    default_model: qwen3.8-max
+    models:
+      qwen3.8-max:
+        context_window: 1000000
+        max_output_tokens: 32768
+        tier: strong
+        capabilities: [tools, coding, reasoning, long_context, json]
+        pricing: {input_per_mtok: 2.00, output_per_mtok: 6.00}
+      qwen3.7-plus:
+        context_window: 1000000
+        max_output_tokens: 32768
+        tier: balanced
+        capabilities: [tools, coding, long_context, json]
+        pricing: {input_per_mtok: 0.40, output_per_mtok: 1.60}
+      qwen3.8-flash:
+        context_window: 1000000
+        max_output_tokens: 32768
+        tier: fast
+        capabilities: [tools, coding, long_context, json]
+        pricing: {input_per_mtok: 0.15, output_per_mtok: 0.47}
+
+  moonshot:
+    type: openai_chat
+    display_name: Kimi (Moonshot AI)
+    # International endpoint. China mainland: https://api.moonshot.cn/v1 (billed in CNY)
+    base_url: https://api.moonshot.ai/v1
+    api_keys: {env: [MOONSHOT_API_KEY, KIMI_API_KEY]}
+    auto_discover: true
+    default_model: kimi-k3
+    models:
+      kimi-k3:
+        context_window: 1000000
+        max_output_tokens: 32768
+        tier: frontier
+        capabilities: [tools, coding, reasoning, long_context, json]
+        pricing: {input_per_mtok: 3.00, output_per_mtok: 15.00, cached_input_per_mtok: 0.30}
+      kimi-k2.7-code:
+        context_window: 256000
+        max_output_tokens: 32768
+        tier: strong
+        capabilities: [tools, coding, json]
+        pricing: {input_per_mtok: 0.95, output_per_mtok: 4.00}
+      kimi-k2.6:
+        context_window: 256000
+        max_output_tokens: 32768
+        tier: balanced
+        capabilities: [tools, coding, json]
+        pricing: {input_per_mtok: 0.95, output_per_mtok: 4.00}
+
+  mistral:
+    type: openai_chat
+    display_name: Mistral AI
+    base_url: https://api.mistral.ai/v1
+    api_keys: {env: [MISTRAL_API_KEY]}
+    auto_discover: true
+    default_model: mistral-large-latest
+    models:
+      mistral-large-latest:
+        context_window: 128000
+        max_output_tokens: 32768
+        tier: strong
+        capabilities: [tools, coding, reasoning, json]
+        pricing: {input_per_mtok: 0.50, output_per_mtok: 1.50}
+      mistral-medium-latest:
+        context_window: 128000
+        max_output_tokens: 32768
+        tier: balanced
+        capabilities: [tools, coding, json]
+        pricing: {input_per_mtok: 1.50, output_per_mtok: 7.50}
+      mistral-small-latest:
+        context_window: 128000
+        max_output_tokens: 32768
+        tier: fast
+        capabilities: [tools, coding, json]
+        pricing: {input_per_mtok: 0.15, output_per_mtok: 0.60}
+      codestral-latest:
+        context_window: 256000
+        max_output_tokens: 32768
+        tier: fast
+        capabilities: [tools, coding, json]
+        pricing: {input_per_mtok: 0.30, output_per_mtok: 0.90}
+
+  zai:
+    type: openai_chat
+    display_name: GLM (Z.ai)
+    # General endpoint. A Coding Plan subscription uses /api/coding/paas/v4 instead -
+    # the two are not interchangeable. China mainland: https://open.bigmodel.cn/api/paas/v4
+    base_url: https://api.z.ai/api/paas/v4
+    api_keys: {env: [ZAI_API_KEY, GLM_API_KEY, ZHIPU_API_KEY]}
+    auto_discover: true
+    default_model: glm-5.3
+    models:
+      glm-5.3:
+        context_window: 203000
+        max_output_tokens: 32768
+        tier: frontier
+        capabilities: [tools, coding, reasoning, json]
+        pricing: {input_per_mtok: 1.40, output_per_mtok: 4.40}
+      glm-5.2:
+        context_window: 203000
+        max_output_tokens: 32768
+        tier: strong
+        capabilities: [tools, coding, reasoning, json]
+        pricing: {input_per_mtok: 0.49, output_per_mtok: 1.54}
+      glm-4.7:
+        context_window: 203000
+        max_output_tokens: 32768
+        tier: balanced
+        capabilities: [tools, coding, json]
+        pricing: {input_per_mtok: 0.40, output_per_mtok: 1.75}
+      glm-4.7-flash:
+        context_window: 203000
+        max_output_tokens: 32768
+        tier: fast
+        capabilities: [tools, coding, json]
+        pricing: {input_per_mtok: 0.06, output_per_mtok: 0.40}
+
+  # Meta retired its own Llama API on 2026-07-06. Llama models are reached
+  # through a host instead - or locally via the ollama / llamacpp entries below.
+  groq:
+    type: openai_chat
+    display_name: Groq (hosts Llama, Qwen, Kimi …)
+    base_url: https://api.groq.com/openai/v1
+    api_keys: {env: [GROQ_API_KEY]}
+    auto_discover: true          # Groq changes its line-up often - let the API report it
+    # No fixed model list on purpose: run  /models discover groq  and add prices
+    # for the models you use, otherwise /cost shows $0 for them.
+
+  together:
+    type: openai_chat
+    display_name: Together AI (hosts Llama and other open models)
+    base_url: https://api.together.xyz/v1
+    api_keys: {env: [TOGETHER_API_KEY]}
+    auto_discover: true
+    # Same as above: /models discover together, then add prices where they matter.
+
   ollama:
-    type: ollama                    # lokal, nativ POST /api/chat
-    display_name: Ollama (lokal)
+    type: ollama                    # local, native POST /api/chat
+    display_name: Ollama (local)
     base_url: http://localhost:11434
     requires_api_key: false
     local: true
@@ -208,7 +380,7 @@ providers:
 
   llamacpp:
     type: openai_chat               # llama.cpp llama-server (OpenAI-compatible, --jinja for tools)
-    display_name: llama.cpp (lokal)
+    display_name: llama.cpp (local)
     enabled: false
     base_url: http://localhost:8080/v1
     requires_api_key: false
@@ -222,7 +394,7 @@ providers:
 
   lmstudio:
     type: openai_chat
-    display_name: LM Studio (lokal)
+    display_name: LM Studio (local)
     enabled: false
     base_url: http://localhost:1234/v1
     requires_api_key: false

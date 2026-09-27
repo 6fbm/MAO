@@ -35,6 +35,7 @@ As of 2026-09-14
 | Anthropic | Messages API `POST /v1/messages` | Thinking is always on for Opus 5 / Sonnet 5; thinking blocks are returned unchanged |
 | Google Gemini | `models.generateContent` | "Legacy" but fully supported; `thoughtSignature` is returned without loss |
 | Ollama | native `POST /api/chat` | `num_ctx` is set explicitly; model detection via `/api/tags` + `/api/show` |
+| DeepSeek / Qwen / Kimi / Mistral / GLM / Groq / Together | OpenAI-compatible Chat Completions | generic provider, configuration only |
 | llama.cpp / LM Studio / vLLM / OpenRouter | OpenAI-compatible Chat Completions | generic provider |
 
 Models without native tool calling use a text-based tool protocol (```` ```tool ```` blocks).

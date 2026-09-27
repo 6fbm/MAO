@@ -7,6 +7,9 @@ All notable changes to this project are documented in this file. The format is b
 ## [Unreleased]
 
 ### Added
+- Providers for DeepSeek, Qwen (Alibaba Model Studio), Kimi (Moonshot AI), Mistral AI, GLM (Z.ai),
+  Groq and Together AI. All of them speak the OpenAI-compatible protocol, so they are configuration
+  only - no new provider code. Endpoints and prices checked on 2026-09-27.
 - `install.sh` and `mao.sh` as the Linux/macOS counterparts to `install.cmd` and `mao.cmd`.
 - CI on GitHub Actions: the test suite on Linux, macOS and Windows against Python 3.11–3.14.
 - `CONTRIBUTING.md`, `CHANGELOG.md`, `LICENSE` (MIT) and a vulnerability reporting section in

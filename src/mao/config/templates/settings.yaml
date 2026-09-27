@@ -23,6 +23,8 @@ aliases:
   gemini: gemini
   grok: xai
   claude: anthropic
+  kimi: moonshot
+  glm: zai
   local: ollama
   llama: ollama
 

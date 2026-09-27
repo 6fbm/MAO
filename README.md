@@ -169,7 +169,7 @@ Your own agent in YAML:
 ```
 
 Model references: `auto`, `openai` (the provider's default model), `openai/gpt-5.6-terra`, or the
-aliases `gpt`, `gemini`, `grok`, `claude`, `local`. Setting
+aliases `gpt`, `gemini`, `grok`, `claude`, `kimi`, `glm`, `local`. Setting
 `settings.orchestration.auto_model_selection: false` turns every automatic choice off.
 
 ## Providers and models
@@ -180,8 +180,17 @@ aliases `gpt`, `gemini`, `grok`, `claude`, `local`. Setting
 | xAI Grok | Responses API | `XAI_API_KEY` |
 | Anthropic Claude | Messages API | `ANTHROPIC_API_KEY` |
 | Google Gemini | generateContent | `GEMINI_API_KEY` / `GOOGLE_API_KEY` |
+| DeepSeek | OpenAI-compatible | `DEEPSEEK_API_KEY` |
+| Qwen (Alibaba Model Studio) | OpenAI-compatible | `DASHSCOPE_API_KEY` |
+| Kimi (Moonshot AI) | OpenAI-compatible | `MOONSHOT_API_KEY` |
+| Mistral AI | OpenAI-compatible | `MISTRAL_API_KEY` |
+| GLM (Z.ai) | OpenAI-compatible | `ZAI_API_KEY` |
+| Groq, Together AI | OpenAI-compatible | `GROQ_API_KEY`, `TOGETHER_API_KEY` |
 | Ollama | `/api/chat` (local) | – |
 | llama.cpp, LM Studio, vLLM, OpenRouter … | OpenAI-compatible | depends on the service |
+
+Meta retired its own Llama API on 2026-07-06. Llama models are reached through a host such as Groq,
+Together AI or OpenRouter, or run locally through Ollama or llama.cpp.
 
 Model IDs and prices live in `config/providers.yaml` (as of 2026-09-14) and can be changed at any time.
 `/models discover <provider>` reads the actually available models from the provider API. Local Ollama
