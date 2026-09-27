@@ -1,0 +1,65 @@
+# ============================================================================
+#  Permissions and approvals
+#
+#  Order in which an agent's permissions are resolved:
+#     defaults  ->  role  ->  agent (agents.yaml)  ->  ceiling (global cap)
+#
+#  Approval rules: allow = permit, ask = ask first, deny = forbid
+#  execute also accepts: ask_risky = only ask for medium/high risk
+#  Critical actions are always asked about or blocked.
+#  In PLAN mode every writing action is blocked regardless of these rules.
+# ============================================================================
+
+defaults:
+  filesystem: read
+  terminal: false
+  internet: false
+  git: read
+
+# Global cap - it can only take permissions away, e.g. turn the terminal off for everyone:
+# ceiling:
+#   terminal: false
+ceiling: null
+
+approval:
+  create: allow
+  overwrite: allow
+  edit: allow
+  mkdir: allow
+  move: ask
+  delete: ask
+  execute: ask_risky
+  internet: allow
+  git_write: allow
+  git_destructive: ask
+  sensitive_read: ask          # e.g. .env, *.pem
+  outside_workspace: deny
+
+# true = grant every "ask" approval automatically (the denylist and critical actions are excepted)
+auto_approve: false
+
+sensitive_patterns: [.env, .env.*, "*.pem", "*.key", "*.pfx", "*.p12", "id_rsa*", "id_ed25519*",
+                     "*secret*", "*credential*", .npmrc, .pypirc]
+
+# never writable
+protected_patterns: [.git, .git/**]
+
+# allowed without asking (only without command chaining or redirection)
+command_allowlist: ["python -m pytest*", "pytest*", "py -m pytest*", "npm test*", "npm run test*",
+                    "npm run lint*", "npx tsc*", "cargo test*", "cargo check*", "go test*", "go vet*",
+                    "dotnet test*", "dotnet build*", "git status*", "git diff*", "git log*",
+                    "python -m py_compile*", "ruff*", "mypy*"]
+
+# always blocked
+command_denylist: ["format *", "diskpart*", "shutdown*", "restart-computer*", "stop-computer*",
+                   "bcdedit*", "reg delete*", "vssadmin*", "cipher /w*", "rm -rf /*", "rm -rf ~*",
+                   "mkfs*", "dd if=*", "git push*--force*", "git push -f*"]
+
+# read-only commands allowed in PLAN mode
+plan_mode_commands: ["git status*", "git log*", "git diff*", "git branch*", "git show*",
+                     "python --version", "py --version", "node --version", "npm --version",
+                     "pip list*", "pip show*", "python -m pip list*", "dotnet --version",
+                     "go version", "cargo --version"]
+
+# these environment variables are removed from terminal processes (protects the API keys)
+scrub_env_patterns: ["*API_KEY*", "*APIKEY*", "*_TOKEN", "*TOKEN_*", "*SECRET*", "*PASSWORD*", "*PASSWD*"]

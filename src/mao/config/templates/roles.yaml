@@ -1,0 +1,33 @@
+# ============================================================================
+#  Roles
+#
+#  Built-in roles: planner, architect, researcher, coder, reviewer, tester,
+#  debugger, security, critic, documentation, project_manager, performance
+#
+#  Define new roles here, or adjust the built-in ones.
+#  When the name matches a built-in role, only the fields you give are overridden.
+#
+#  capabilities drive how work is distributed, for example:
+#    planning, analysis, architecture, research, coding, review, testing,
+#    debugging, security, critique, documentation, management, performance
+# ============================================================================
+roles: {}
+
+# Example:
+# roles:
+#   security-expert:
+#     description: Checks changes for security problems
+#     capabilities: [security, review]
+#     preferred_tier: strong
+#     tools: [filesystem, web, collaboration]
+#     permissions:
+#       filesystem: read
+#       internet: true
+#       terminal: false
+#     system_prompt: |
+#       You are a senior security engineer.
+#       Check every change for security problems (injection, secrets,
+#       unsafe deserialisation, missing validation, privilege escalation).
+#
+#   coder:            # adjust a built-in role
+#     preferred_tier: frontier

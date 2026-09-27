@@ -1,0 +1,66 @@
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[project]
+name = "multi-ai-orchestrator"
+version = "0.1.0"
+description = "Terminal multi-agent AI orchestrator: cloud and local models work as a team of agents on your codebase"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "MAO" }]
+keywords = [
+  "ai", "agents", "multi-agent", "llm", "orchestrator", "cli", "tui",
+  "openai", "anthropic", "gemini", "ollama", "local-llm",
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX :: Linux",
+  "Operating System :: MacOS",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Software Development :: Code Generators",
+  "Topic :: Utilities",
+]
+dependencies = [
+  "httpx>=0.27",
+  "pydantic>=2.7",
+  "pyyaml>=6.0",
+  "rich>=13.7",
+  "prompt_toolkit>=3.0.43",
+  "psutil>=5.9",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "pytest-asyncio>=0.23"]
+
+# Once the repository is on GitHub, fill in the addresses here:
+# [project.urls]
+# Homepage = "https://github.com/DEIN-USER/MAO"
+# Repository = "https://github.com/DEIN-USER/MAO"
+# Issues = "https://github.com/DEIN-USER/MAO/issues"
+# Changelog = "https://github.com/DEIN-USER/MAO/blob/main/CHANGELOG.md"
+
+[project.scripts]
+mao = "mao.cli.main:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mao"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+markers = [
+  "ollama: needs a running Ollama server with a tool-capable model",
+  "network: needs internet access",
+]
+addopts = "-m \"not ollama and not network\""

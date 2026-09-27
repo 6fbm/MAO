@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+logs/
+dist/
+build/
+*.egg-info/
+# never commit local secret files
+secrets*.dat
+secrets*.json
+# The active configuration is user specific (it holds your own workspace path,
+# for example). It is generated on first start from src/mao/config/templates/,
+# which is the versioned source.
+config/*.yaml
+config/*.local.yaml

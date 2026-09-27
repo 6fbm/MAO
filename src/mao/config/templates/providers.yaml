@@ -1,0 +1,265 @@
+# ============================================================================
+#  Providers and models
+#
+#  type: openai_responses | openai_chat | anthropic | gemini | ollama | mock
+#
+#  NEVER put API keys in this file. Two ways (combinable, several keys per provider):
+#    1) environment variables - names go under api_keys.env
+#    2) encrypted secret store (Windows DPAPI):  /providers key add <provider>
+#
+#  Prices: USD per 1M tokens, as of 2026-09-14 according to the official pricing pages.
+#  Cost figures in the program are estimates - please re-check prices regularly.
+#  Update model IDs and limits with:  /models discover <provider>
+#
+#  tier:          fast < balanced < strong < frontier  (used for automatic model choice)
+#  capabilities:  tools, coding, reasoning, vision, web_search, long_context, json
+#  tool_calling:  native | prompt (text protocol for models without a tool API) | none
+#  extra_body:    copied into the API request unchanged (e.g. reasoning effort)
+# ============================================================================
+providers:
+
+  openai:
+    type: openai_responses          # Responses API (POST /v1/responses)
+    display_name: OpenAI
+    base_url: https://api.openai.com/v1
+    api_keys:
+      env: [OPENAI_API_KEY, OPENAI_API_KEY_2, OPENAI_API_KEY_3]
+    timeout_s: 300
+    max_retries: 3
+    rate_limit:
+      max_concurrency: 8
+    default_model: gpt-5.6-terra
+    options:
+      include_encrypted_reasoning: true   # return reasoning items statelessly inside the tool loop
+    models:
+      gpt-5.6-terra:
+        context_window: 1050000
+        max_output_tokens: 128000
+        tier: strong
+        capabilities: [tools, coding, reasoning, long_context, json, vision]
+        reasoning: true
+        supports_temperature: false
+        # Long-Context-Aufschlag (> 272k) als Annahme doppelt angesetzt
+        pricing: {input_per_mtok: 2.00, cached_input_per_mtok: 0.20, output_per_mtok: 12.00,
+                  long_context_threshold: 272000, long_input_per_mtok: 4.00, long_output_per_mtok: 24.00}
+      gpt-5.6-sol:
+        context_window: 1050000
+        max_output_tokens: 128000
+        tier: frontier
+        capabilities: [tools, coding, reasoning, long_context, json, vision]
+        reasoning: true
+        supports_temperature: false
+        # Aktionspreis bis mindestens 21.11.2026
+        pricing: {input_per_mtok: 4.00, cached_input_per_mtok: 0.40, output_per_mtok: 20.00,
+                  long_context_threshold: 272000, long_input_per_mtok: 8.00, long_output_per_mtok: 40.00}
+      gpt-5.6-luna:
+        context_window: 1050000
+        max_output_tokens: 128000
+        tier: fast
+        capabilities: [tools, coding, reasoning, long_context, json]
+        reasoning: true
+        supports_temperature: false
+        pricing: {input_per_mtok: 0.20, cached_input_per_mtok: 0.02, output_per_mtok: 1.20}
+      gpt-6-astra:
+        enabled: false                    # expensive - enable when you need it
+        context_window: 1050000
+        max_output_tokens: 128000
+        tier: frontier
+        capabilities: [tools, coding, reasoning, long_context, json, vision]
+        reasoning: true
+        supports_temperature: false
+        pricing: {input_per_mtok: 10.00, cached_input_per_mtok: 1.00, output_per_mtok: 50.00}
+
+  xai:
+    type: openai_responses          # xAI Responses API (Chat Completions is "legacy" there)
+    display_name: xAI Grok
+    base_url: https://api.x.ai/v1
+    api_keys:
+      env: [XAI_API_KEY, XAI_API_KEY_2]
+    timeout_s: 300
+    rate_limit:
+      max_concurrency: 6
+    default_model: grok-4.6
+    options:
+      include_encrypted_reasoning: false
+    models:
+      grok-4.6:
+        context_window: 500000
+        max_output_tokens: 64000
+        tier: strong
+        capabilities: [tools, coding, reasoning, long_context, json]
+        # Preisstaffel laut Doku $2-4 / $6-12; Schwelle hier als Annahme 200k
+        pricing: {input_per_mtok: 2.00, output_per_mtok: 6.00,
+                  long_context_threshold: 200000, long_input_per_mtok: 4.00, long_output_per_mtok: 12.00}
+      grok-4.3:
+        context_window: 1000000
+        max_output_tokens: 64000
+        tier: balanced
+        capabilities: [tools, coding, reasoning, long_context, json]
+        pricing: {input_per_mtok: 1.25, output_per_mtok: 2.50,
+                  long_context_threshold: 200000, long_input_per_mtok: 2.50, long_output_per_mtok: 5.00}
+      grok-build-0.1:
+        context_window: 256000
+        max_output_tokens: 64000
+        tier: balanced
+        capabilities: [tools, coding, json]
+        pricing: {input_per_mtok: 1.00, output_per_mtok: 2.00,
+                  long_context_threshold: 200000, long_input_per_mtok: 2.00, long_output_per_mtok: 4.00}
+
+  anthropic:
+    type: anthropic                 # Messages API (POST /v1/messages)
+    display_name: Anthropic Claude
+    base_url: https://api.anthropic.com/v1
+    api_keys:
+      env: [ANTHROPIC_API_KEY, ANTHROPIC_API_KEY_2]
+    timeout_s: 600
+    rate_limit:
+      max_concurrency: 6
+    default_model: claude-sonnet-5
+    options:
+      anthropic_version: "2023-06-01"
+    models:
+      claude-sonnet-5:
+        context_window: 1000000
+        max_output_tokens: 128000
+        tier: strong
+        capabilities: [tools, coding, reasoning, long_context, vision, json]
+        reasoning: true               # thinking is always on for this model
+        supports_temperature: false
+        pricing: {input_per_mtok: 2.00, cached_input_per_mtok: 0.20, output_per_mtok: 10.00}
+      claude-opus-5:
+        context_window: 1000000
+        max_output_tokens: 128000
+        tier: frontier
+        capabilities: [tools, coding, reasoning, long_context, vision, json]
+        reasoning: true
+        supports_temperature: false
+        pricing: {input_per_mtok: 5.00, cached_input_per_mtok: 0.50, output_per_mtok: 25.00}
+      claude-haiku-4-5:
+        id: claude-haiku-4-5-20251001
+        context_window: 200000
+        max_output_tokens: 64000
+        tier: fast
+        capabilities: [tools, coding, vision, json]
+        pricing: {input_per_mtok: 1.00, cached_input_per_mtok: 0.10, output_per_mtok: 5.00}
+      claude-fable-5-1:
+        enabled: false                # expensive - enable when you need it
+        context_window: 1000000
+        max_output_tokens: 128000
+        tier: frontier
+        capabilities: [tools, coding, reasoning, long_context, vision, json]
+        reasoning: true
+        supports_temperature: false
+        pricing: {input_per_mtok: 10.00, cached_input_per_mtok: 0.25, output_per_mtok: 50.00}
+
+  gemini:
+    type: gemini                    # models.generateContent (fully supported)
+    display_name: Google Gemini
+    base_url: https://generativelanguage.googleapis.com/v1beta
+    api_keys:
+      env: [GEMINI_API_KEY, GOOGLE_API_KEY, GEMINI_API_KEY_2]
+    timeout_s: 300
+    rate_limit:
+      max_concurrency: 6
+    default_model: gemini-3.8-flash
+    options:
+      google_search_grounding: true   # for the "gemini" search backend
+    models:
+      gemini-3.8-flash:
+        # context limits are assumptions - /models discover gemini reads the real values
+        context_window: 1048576
+        max_output_tokens: 65536
+        tier: strong
+        capabilities: [tools, coding, reasoning, web_search, long_context, json, vision]
+        reasoning: true
+        # bis 31.12.2026; ab 01.01.2027: 1.50 / 7.50
+        pricing: {input_per_mtok: 0.75, output_per_mtok: 3.75}
+      gemini-3.1-pro-preview:
+        context_window: 1048576
+        max_output_tokens: 65536
+        tier: strong
+        capabilities: [tools, coding, reasoning, web_search, long_context, json, vision]
+        reasoning: true
+        pricing: {input_per_mtok: 2.00, output_per_mtok: 12.00,
+                  long_context_threshold: 200000, long_input_per_mtok: 4.00, long_output_per_mtok: 18.00}
+      gemini-3.5-flash-lite:
+        context_window: 1048576
+        max_output_tokens: 65536
+        tier: fast
+        capabilities: [tools, coding, web_search, long_context, json]
+        pricing: {input_per_mtok: 0.30, output_per_mtok: 2.50}
+
+  ollama:
+    type: ollama                    # lokal, nativ POST /api/chat
+    display_name: Ollama (lokal)
+    base_url: http://localhost:11434
+    requires_api_key: false
+    local: true
+    auto_discover: true             # detect installed models automatically
+    timeout_s: 900
+    max_retries: 1
+    rate_limit:
+      max_concurrency: 1            # with 8 GB VRAM: one local call at a time
+    options:
+      num_ctx: 8192                 # context window for local models (depends on VRAM)
+      keep_alive: 10m
+      discovered_tier: fast
+    models: {}
+
+  llamacpp:
+    type: openai_chat               # llama.cpp llama-server (OpenAI-compatible, --jinja for tools)
+    display_name: llama.cpp (lokal)
+    enabled: false
+    base_url: http://localhost:8080/v1
+    requires_api_key: false
+    local: true
+    auto_discover: true
+    timeout_s: 900
+    max_retries: 1
+    rate_limit:
+      max_concurrency: 1
+    models: {}
+
+  lmstudio:
+    type: openai_chat
+    display_name: LM Studio (lokal)
+    enabled: false
+    base_url: http://localhost:1234/v1
+    requires_api_key: false
+    local: true
+    auto_discover: true
+    timeout_s: 900
+    max_retries: 1
+    rate_limit:
+      max_concurrency: 1
+    models: {}
+
+  openrouter:
+    type: openai_chat
+    display_name: OpenRouter
+    enabled: false
+    base_url: https://openrouter.ai/api/v1
+    api_keys:
+      env: [OPENROUTER_API_KEY]
+    models: {}
+    # Beispiel:
+    # models:
+    #   some-model:
+    #     id: vendor/model-name
+    #     context_window: 200000
+    #     tier: strong
+    #     capabilities: [tools, coding]
+
+  mock:
+    type: mock                      # ONLY for tests and the offline demo (mao --demo) - simulated!
+    display_name: Mock (simuliert)
+    enabled: false
+    requires_api_key: false
+    selectable: false               # never picked automatically
+    local: true
+    models:
+      scripted:
+        context_window: 64000
+        max_output_tokens: 4096
+        tier: fast
+        capabilities: [tools, coding, reasoning, json]

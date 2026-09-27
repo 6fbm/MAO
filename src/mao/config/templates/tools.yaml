@@ -1,0 +1,46 @@
+# ============================================================================
+#  Tools
+#  An agent only gets the tools it has permissions for (see permissions.yaml).
+# ============================================================================
+
+# tool groups enabled globally
+enabled_groups: [filesystem, terminal, web, git, tests, collaboration]
+
+filesystem:
+  max_read_chars: 60000        # maximum characters per read_file call
+  max_file_bytes: 5000000      # larger files are neither read nor written
+  max_list_entries: 400
+  max_search_results: 200
+  ignore_patterns: [.git, node_modules, __pycache__, .venv, venv, .mypy_cache,
+                    .pytest_cache, .ruff_cache, dist, build, .idea, .vs, "*.pyc", .DS_Store]
+
+terminal:
+  shell: auto                  # auto (cmd on Windows, bash elsewhere) | cmd | powershell | pwsh | bash | sh
+  default_timeout_s: 120
+  max_timeout_s: 1800
+  max_output_chars: 16000
+  env_passthrough: []          # environment variables passed through despite the secret filter
+
+web:
+  # auto: Brave (BRAVE_API_KEY) > Tavily (TAVILY_API_KEY) > SearXNG (searxng_url) > DuckDuckGo HTML
+  search_backend: auto         # auto | duckduckgo | brave | tavily | searxng | gemini
+  searxng_url: null
+  brave_api_key_env: BRAVE_API_KEY
+  tavily_api_key_env: TAVILY_API_KEY
+  gemini_search_model: null    # e.g. gemini/gemini-3.8-flash for Google Search grounding
+  max_results: 6
+  fetch_max_chars: 20000
+  fetch_max_bytes: 3000000
+  timeout_s: 20
+  allow_private_networks: false   # block fetch_url on localhost/LAN (SSRF protection)
+
+tests:
+  command: null                # null = detect automatically (pytest, npm test, cargo test, go test, dotnet test)
+  timeout_s: 900
+
+git:
+  enabled: true
+  auto_checkpoint: true        # create a git checkpoint before RUN (refs/mao/checkpoints/…)
+  auto_branch: false           # switch to a new branch before RUN (only with a clean working tree)
+  branch_prefix: mao/
+  auto_commit: false           # commit automatically at the end (otherwise it is offered)

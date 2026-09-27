@@ -1,0 +1,69 @@
+# ============================================================================
+#  Agent team
+#
+#  Each entry creates "count" instances (with count > 1: name-1, name-2, …).
+#  model:  auto | <provider> | <provider>/<model> | alias (gpt, gemini, grok, claude, local)
+#          auto = the orchestrator picks one to fit the role, cost and availability
+#  fallback_models: models to fall back to on failure (determined automatically otherwise)
+#  permissions (optional, overrides the role default):
+#          filesystem: none|read|write|full   terminal: true|false
+#          internet: true|false               git: none|read|write
+#  tools:  filesystem, terminal, web, git, tests, collaboration
+#
+#  From the CLI:  /agents add gpt architect
+#                 /agents add 3x gemini coder
+#                 /agents add ollama/qwen3:4b tester --name local-tester
+# ============================================================================
+agents:
+  - name: planner
+    role: planner
+    model: auto
+
+  - name: architect
+    role: architect
+    model: auto
+
+  - name: researcher
+    role: researcher
+    model: auto
+
+  - name: coder
+    role: coder
+    model: auto
+    count: 2
+
+  - name: reviewer
+    role: reviewer
+    model: auto
+
+  - name: tester
+    role: tester
+    model: auto
+
+  - name: debugger
+    role: debugger
+    model: auto
+
+  - name: security
+    role: security
+    model: auto
+
+  - name: critic
+    role: critic
+    model: auto
+
+  - name: pm
+    role: project_manager
+    model: auto
+
+# Example of a custom agent:
+#  - name: security-expert
+#    role: security
+#    model: openai
+#    system_prompt: |
+#      You are a senior security engineer.
+#      Check every change for security problems.
+#    permissions:
+#      filesystem: read
+#      internet: true
+#      terminal: false
