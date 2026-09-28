@@ -3,6 +3,8 @@ __pycache__/
 *.pyc
 .pytest_cache/
 logs/
+# Local weight files are gigabytes - they never belong in a repository.
+models/
 dist/
 build/
 *.egg-info/

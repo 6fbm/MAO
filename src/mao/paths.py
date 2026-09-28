@@ -45,6 +45,11 @@ class AppPaths:
     def config_dir(self) -> Path:
         return self.home / "config"
 
+    @property
+    def models_dir(self) -> Path:
+        """Folder for local weight files (.gguf) that mao hands to a runtime."""
+        return self.home / "models"
+
     def logs_dir(self, configured: str = "logs") -> Path:
         path = Path(configured).expanduser()
         return path if path.is_absolute() else self.home / path

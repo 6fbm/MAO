@@ -116,7 +116,7 @@ and all logs and sessions are created exactly as in normal operation.
 |---|---|
 | Tasks | `/plan <task>` · `/plan show` · `/replan <feedback>` · `/run [session]` (`/go`) · `/pause` · `/resume` · `/stop` · `/debate <question>` · `/chat [model]` |
 | Agents | `/agents` · `/agents add [Nx] <model> <role> [--name N]` · `/agents remove <name>` · `/agents show <name>` · `/agents set <name> <field> <value>` · `/agents roles` |
-| Models | `/providers` · `/providers test [name]` · `/providers key add\|list\|remove <provider>` · `/providers enable\|disable <name>` · `/models [provider]` · `/models discover [provider]` · `/models info <ref>` |
+| Models | `/models local` · `/models import <file> [name]` · `/providers` · `/providers test [name]` · `/providers key add\|list\|remove <provider>` · `/providers enable\|disable <name>` · `/models [provider]` · `/models discover [provider]` · `/models info <ref>` |
 | Usage | `/tokens` · `/cost` · `/max-tokens <n\|none>` · `/max-cost <usd\|none>` · `/max-agents <n>` · `/max-rounds <n>` · `/max-parallel <n>` |
 | Sessions | `/sessions` · `/sessions load <id>` · `/sessions show <id>` · `/logs [file] [--tail N]` · `/messages [n]` · `/board [kind] [search]` · `/decisions` |
 | Workspace & git | `/workspace [path]` · `/changes` · `/diff [path]` · `/rollback [path …]` · `/git status\|diff\|log\|commit <msg>\|checkpoints` |
@@ -128,6 +128,21 @@ just as well as their slashed forms, so the shell behaves like a console rather 
 Anything that is not a command is planned as a task, and a command name followed by free text stays a
 task - `run the tests` plans work, `run` resumes a session. Use `/plan <text>` to force a task and
 `/run` to force the command. Tab completes commands and subcommands, with or without the slash.
+
+### Local model files
+
+Drop a `.gguf` file into `models/` and hand it to Ollama:
+
+```text
+mao › models local                              what is in the folder
+mao › models import Qwen3-4B-Q4_K_M.gguf        register it with Ollama
+mao › chat ollama/qwen3-4b-q4_k_m               talk to it
+```
+
+The import runs `ollama create`, which copies the weights into Ollama's own store - the file is held
+twice until you delete it from `models/`. Ollama has to be installed for this; models pulled with
+`ollama pull` work without the folder. `models/` is not versioned, model files are far too large for a
+repository.
 
 ### Chatting with one model
 

@@ -91,6 +91,7 @@ def _exit_code(app: AppContext) -> int:
 
 def _init_config(args: argparse.Namespace) -> int:
     from mao.config.loader import ConfigManager
+    from mao.models import local as local_models
     from mao.paths import AppPaths
 
     paths = AppPaths.discover(args.home)
@@ -100,6 +101,7 @@ def _init_config(args: argparse.Namespace) -> int:
         print(f"  created: {path.name}")
     if not written:
         print("  All files are already present (use --force to replace them with the templates).")
+    print(f"Model folder:         {local_models.ensure_dir(paths.models_dir)}")
     return 0
 
 

@@ -7,6 +7,9 @@ All notable changes to this project are documented in this file. The format is b
 ## [Unreleased]
 
 ### Added
+- A `models/` folder for local weight files, created by `mao init` and ignored by git. `/models local`
+  lists the `.gguf` files in it and `/models import <file> [name]` hands one to Ollama with
+  `ollama create`, then refreshes the model list so it can be used straight away.
 - `/chat [<model>]`: a direct conversation with a single model, without planning, agents or a session.
   The prompt shows the model while a chat runs, every reply reports tokens and cost, and `chat reset`,
   `chat model <ref>` and `chat off` steer it.

@@ -11,6 +11,7 @@ from rich.text import Text
 from mao.cli.commands.base import CommandContext, command, require_args
 from mao.core.errors import ConfigError, MaoError, ProviderError
 from mao.core.text import fmt_int
+from mao.models import local as local_models
 
 
 @command(
@@ -123,9 +124,9 @@ async def providers_cmd(ctx: CommandContext, args: list[str], raw: str) -> None:
 @command(
     "models",
     summary="Show models, detect them, or show details",
-    usage="/models [provider] | /models discover [provider] | /models info <provider/model>",
+    usage="/models [provider] | /models local | /models import <file> [name] | /models discover [provider] | /models info <provider/model>",
     group="Models",
-    subcommands=("discover", "info"),
+    subcommands=("discover", "info", "local", "import"),
 )
 async def models_cmd(ctx: CommandContext, args: list[str], raw: str) -> None:
     app = ctx.app
@@ -141,6 +142,51 @@ async def models_cmd(ctx: CommandContext, args: list[str], raw: str) -> None:
             except (ProviderError, ConfigError, asyncio.TimeoutError) as exc:
                 ctx.ui.error(f"{name}: {exc or 'Timeout'}")
         return
+    if args and args[0].lower() == "local":
+        models_dir = local_models.ensure_dir(app.paths.models_dir)
+        files = local_models.scan(models_dir)
+        ctx.ui.print(Text(f"Model folder: {models_dir}", style="bold"))
+        if not files:
+            ctx.ui.print(Text("Nothing here yet. Drop a .gguf file in, then: models import <file>", style="dim"))
+            return
+        known = {e.key.split(":")[0] for e in catalog.entries(provider="ollama")}
+        table = Table(box=box.SIMPLE_HEAD)
+        table.add_column("File", style="bold")
+        table.add_column("Size", justify="right")
+        table.add_column("Imported")
+        for item in files:
+            imported = item.suggested_model_name in known
+            table.add_row(
+                item.name,
+                item.size_label,
+                Text("yes", style="green") if imported else Text("no", style="yellow"),
+            )
+        ctx.ui.print(table)
+        ctx.ui.print(Text("Import with: models import <file> [name]", style="dim"))
+        return
+
+    if args and args[0].lower() == "import":
+        require_args(args, 2, "/models import <file> [name]")
+        models_dir = local_models.ensure_dir(app.paths.models_dir)
+        model_file = local_models.resolve_file(models_dir, args[1])
+        model_name = args[2] if len(args) > 2 else model_file.suggested_model_name
+        ctx.ui.print(
+            Text(
+                f"Handing {model_file.name} ({model_file.size_label}) to Ollama as '{model_name}'. "
+                "Ollama copies the weights, so this takes a while.",
+                style="dim",
+            )
+        )
+        with ctx.ui.console.status(f"ollama create {model_name} …"):
+            output = await local_models.import_into_ollama(model_file, model_name)
+        ctx.ui.success(f"Imported as '{model_name}'." + (f" {output.splitlines()[-1]}" if output else ""))
+        try:
+            added = await asyncio.wait_for(app.hub.discover("ollama"), 30)
+            ctx.ui.info(f"ollama now offers {len(added)} newly detected model(s). Use it with: chat ollama/{model_name}")
+        except (ProviderError, ConfigError, asyncio.TimeoutError) as exc:
+            ctx.ui.warn(f"Imported, but the model list could not be refreshed ({exc or 'timeout'}). Try: models discover ollama")
+        return
+
     if args and args[0].lower() == "info":
         require_args(args, 2, "/models info <provider/model>")
         entry = catalog.resolve(args[1])
