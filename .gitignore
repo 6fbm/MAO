@@ -2,11 +2,11 @@
 __pycache__/
 *.pyc
 .pytest_cache/
-logs/
+/logs/
 # Local weight files are gigabytes - they never belong in a repository.
-models/
-dist/
-build/
+/models/
+/dist/
+/build/
 *.egg-info/
 # never commit local secret files
 secrets*.dat
@@ -14,5 +14,5 @@ secrets*.json
 # The active configuration is user specific (it holds your own workspace path,
 # for example). It is generated on first start from src/mao/config/templates/,
 # which is the versioned source.
-config/*.yaml
-config/*.local.yaml
+/config/*.yaml
+/config/*.local.yaml
