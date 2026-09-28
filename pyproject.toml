@@ -42,12 +42,11 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest>=8", "pytest-asyncio>=0.23"]
 
-# Once the repository is on GitHub, fill in the addresses here:
-# [project.urls]
-# Homepage = "https://github.com/DEIN-USER/MAO"
-# Repository = "https://github.com/DEIN-USER/MAO"
-# Issues = "https://github.com/DEIN-USER/MAO/issues"
-# Changelog = "https://github.com/DEIN-USER/MAO/blob/main/CHANGELOG.md"
+[project.urls]
+Homepage = "https://github.com/6fbm/MAO"
+Repository = "https://github.com/6fbm/MAO"
+Issues = "https://github.com/6fbm/MAO/issues"
+Changelog = "https://github.com/6fbm/MAO/blob/main/CHANGELOG.md"
 
 [project.scripts]
 mao = "mao.cli.main:main"

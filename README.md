@@ -2,9 +2,7 @@
 
 **A team of AI agents that works on your codebase — in the terminal.**
 
-<!-- Once this is on GitHub, paste your user and repository name into the next line and uncomment it:
-[![CI](https://github.com/YOUR-USER/MAO/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR-USER/MAO/actions/workflows/ci.yml)
--->
+[![CI](https://github.com/6fbm/MAO/actions/workflows/ci.yml/badge.svg)](https://github.com/6fbm/MAO/actions/workflows/ci.yml)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 ![Platforms](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey)
@@ -47,7 +45,7 @@ simulates the model replies — tools, files and tests are real even there.
 
 ## Installation
 
-Clone the repository, then one command does everything - it sets the environment up on the first run
+Clone the repository (`git clone https://github.com/6fbm/MAO.git`), then one command does everything - it sets the environment up on the first run
 and starts the program on every run after that:
 
 **Linux / macOS**

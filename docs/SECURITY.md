@@ -2,8 +2,8 @@
 
 ## Reporting a vulnerability
 
-Please do **not** open a public issue for a security problem. Use the **Security** tab of this
-repository and the **Report a vulnerability** button (GitHub Security Advisories) instead. You can
+Please do **not** open a public issue for a security problem. Use [GitHub Security Advisories](https://github.com/6fbm/MAO/security/advisories/new) instead - the **Security** tab of this
+repository, button **Report a vulnerability**. You can
 normally expect a first reply within 7 days.
 
 This is a hobby project maintained by one person, with no support commitment: there is no bug bounty
