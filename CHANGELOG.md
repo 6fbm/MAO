@@ -7,6 +7,11 @@ All notable changes to this project are documented in this file. The format is b
 ## [Unreleased]
 
 ### Added
+- The interactive shell takes commands without the leading slash: `clear`, `status`,
+  `agents add 3x gpt coder`, `git status`. A command name followed by free text is still planned as a
+  task, so `run the tests` keeps working as a task while `run` resumes a session. Tab completion now
+  covers the slashless form as well.
+- `/status` lists the active limits (tokens, cost, agents, parallelism, rounds) when no session is running.
 - Providers for DeepSeek, Qwen (Alibaba Model Studio), Kimi (Moonshot AI), Mistral AI, GLM (Z.ai),
   Groq and Together AI. All of them speak the OpenAI-compatible protocol, so they are configuration
   only - no new provider code. Endpoints and prices checked on 2026-09-27.

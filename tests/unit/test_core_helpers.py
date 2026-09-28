@@ -186,3 +186,40 @@ def test_usage_tracker_groups() -> None:
     tracker.update_context("a", 750, 1000)
     assert tracker.max_context_ratio() == 0.75
     assert tracker.snapshot()["totals"]["cost_usd"] == pytest.approx(0.3)
+
+
+@pytest.mark.parametrize(
+    ("line", "expected"),
+    [
+        # bare command names dispatch on their own
+        ("clear", "/clear"),
+        ("status", "/status"),
+        ("exit", "/exit"),
+        ("cls", "/cls"),  # alias
+        # a known subcommand makes the whole line a command
+        ("agents add 3x gpt coder", "/agents add 3x gpt coder"),
+        ("git status", "/git status"),
+        ("debug on", "/debug on"),
+        ("sessions load 7", "/sessions load 7"),
+        # unambiguous names take free arguments too
+        ("max-agents 5", "/max-agents 5"),
+        ("workspace ~/projects/x", "/workspace ~/projects/x"),
+        ("diff app.py", "/diff app.py"),
+        # help takes a command name
+        ("help", "/help"),
+        ("help agents", "/help agents"),
+        # names that can start a sentence stay a task once free text follows
+        ("run the tests", None),
+        ("stop the server", None),
+        ("plan a party", None),
+        ("changes to the api", None),
+        ("help me fix the bug", None),
+        # anything else is a task
+        ("fix the login bug", None),
+        ("write a small web page", None),
+    ],
+)
+def test_slashless_commands_are_told_apart_from_tasks(line: str, expected: str | None) -> None:
+    from mao.cli.repl import Repl
+
+    assert Repl.as_command(line) == expected

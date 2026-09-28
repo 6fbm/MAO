@@ -44,7 +44,9 @@ async def help_cmd(ctx: CommandContext, args: list[str], raw: str) -> None:
         aliases = f" ({', '.join('/' + a for a in spec.aliases)})" if spec.aliases else ""
         table.add_row(f"/{spec.name}{aliases}", spec.summary)
     ctx.ui.print(table)
-    ctx.ui.print(Text("\nText without '/' is planned as a new task (/plan). Details: /help <command>", style="dim"))
+    ctx.ui.print(Text("\nThe leading / is optional: 'clear' and '/clear' both work. Anything that is not\n"
+                      "a command is planned as a task - use /plan <text> to force that. Details: help <command>",
+                      style="dim"))
 
 
 @command("status", summary="Status of the current session (agents, progress, tokens)")
@@ -54,6 +56,14 @@ async def status_cmd(ctx: CommandContext, args: list[str], raw: str) -> None:
         ctx.ui.print(Text(f"Workspace: {app.config.settings.workspace or '(not set - /workspace <path>)'}", style="bold"))
         ctx.ui.print(provider_overview(app))
         ctx.ui.print(agent_overview(preview_manager(app), app))
+        limits = app.config.settings.limits
+        ctx.ui.print(
+            Text(
+                f"Limits: tokens {limits.max_tokens or 'unlimited'} · cost {limits.max_cost_usd or 'unlimited'} USD · "
+                f"agents {limits.max_agents} · parallel {limits.max_parallel_agents} · rounds {limits.max_rounds}",
+                style="dim",
+            )
+        )
         ctx.ui.print(Text("No active session.", style="dim"))
         return
     ctx.ui.print(ctx.ui.status_snapshot())

@@ -123,7 +123,11 @@ and all logs and sessions are created exactly as in normal operation.
 | Configuration | `/config` · `/config show <section>` · `/config set <section.path> <value>` · `/config validate` · `/config reload` |
 | General | `/help [command]` · `/status` · `/debug on\|off` · `/doctor` · `/clear` · `/exit` |
 
-Text without a leading `/` is planned as a new task.
+**The leading `/` is optional.** `clear`, `status`, `agents add 3x gpt coder` and `git status` work
+just as well as their slashed forms, so the shell behaves like a console rather than a prompt box.
+Anything that is not a command is planned as a task, and a command name followed by free text stays a
+task - `run the tests` plans work, `run` resumes a session. Use `/plan <text>` to force a task and
+`/run` to force the command. Tab completes commands and subcommands, with or without the slash.
 
 ### Live view
 

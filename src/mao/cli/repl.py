@@ -25,19 +25,28 @@ if TYPE_CHECKING:
 
 log = logging.getLogger("mao.cli")
 
+# Command names that also work as the first word of a task ("run the tests",
+# "stop guessing"). They are only treated as commands on their own or with one of
+# their own subcommands; with any other text they stay a task. Prefix them with a
+# slash to force the command.
+AMBIGUOUS_COMMANDS = frozenset({"run", "go", "plan", "replan", "stop", "pause", "resume", "debate", "help", "changes"})
+
 
 class CommandCompleter(Completer):
+    """Completes commands typed with or without the leading slash."""
+
     def get_completions(self, document: Document, complete_event: Any) -> Iterable[Completion]:
         text = document.text_before_cursor
-        if not text.startswith("/"):
-            return
-        if " " not in text:
+        slashed = text.startswith("/")
+        body = text[1:] if slashed else text
+        if " " not in body:
+            prefix = "/" if slashed else ""
             for name in REGISTRY.names():
-                if name.startswith(text[1:].lower()):
+                if name.startswith(body.lower()):
                     spec = REGISTRY.get(name)
-                    yield Completion("/" + name, start_position=-len(text), display_meta=spec.summary if spec else "")
+                    yield Completion(prefix + name, start_position=-len(text), display_meta=spec.summary if spec else "")
             return
-        head, _, rest = text[1:].partition(" ")
+        head, _, rest = body.partition(" ")
         spec = REGISTRY.get(head)
         if spec and spec.subcommands and " " not in rest:
             for sub in spec.subcommands:
@@ -74,7 +83,7 @@ class Repl:
             self.ui.warn(app.hub.secret_store_error)
         if not manager.available():
             self.ui.warn("No agent has a usable model. Add an API key (/providers key add openai) or start a local model (/models discover ollama).")
-        self.ui.print(Text("\n/help for all commands · /plan <task> starts planning · text without / is planned as a task", style="dim"))
+        self.ui.print(Text("\nhelp lists every command · the leading / is optional · anything that is not a command is planned as a task", style="dim"))
 
     # ------------------------------------------------------------------ loop
 
@@ -96,12 +105,36 @@ class Repl:
             suffix = f" #{srt.session.id}"
         return f"mao{suffix} › "
 
+    @staticmethod
+    def as_command(text: str) -> str | None:
+        """Return the "/command …" form when a slashless line clearly names a command.
+
+        Typing "clear" should clear the screen, not plan a task called "clear". But
+        "run the tests" is a task, even though "run" is also a command - so a command
+        name followed by free text only counts when the name cannot start a sentence.
+        """
+        head, _, rest = text.partition(" ")
+        spec = REGISTRY.get(head)
+        if spec is None:
+            return None
+        rest = rest.strip()
+        if not rest:
+            return "/" + text
+        first = rest.split(" ", 1)[0].lower()
+        if first in spec.subcommands:
+            return "/" + text
+        if spec.name == "help" and REGISTRY.get(first) is not None:
+            return "/" + text
+        if head.lower() in AMBIGUOUS_COMMANDS:
+            return None
+        return "/" + text
+
     async def dispatch(self, line: str) -> None:
         text = line.strip()
         if not text:
             return
         if not text.startswith("/"):
-            text = "/plan " + text
+            text = self.as_command(text) or "/plan " + text
         name, _, raw = text[1:].partition(" ")
         spec = REGISTRY.get(name)
         if spec is None:
