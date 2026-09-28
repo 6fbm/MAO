@@ -9,4 +9,6 @@ if [ ! -x "$MAO_ROOT/.venv/bin/python" ]; then
 fi
 
 export MAO_HOME="$MAO_ROOT"
+# Keep __pycache__ out of the source tree without giving up the cache itself.
+export PYTHONPYCACHEPREFIX="${PYTHONPYCACHEPREFIX:-$MAO_ROOT/.venv/pycache}"
 exec "$MAO_ROOT/.venv/bin/python" -m mao "$@"

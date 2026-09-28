@@ -23,6 +23,14 @@ templates when you want a default to change for everyone.
 .venv/bin/python -m pytest       # Windows: .venv\Scripts\python.exe -m pytest
 ```
 
+The launchers set `PYTHONPYCACHEPREFIX` so that `__pycache__` lands in `.venv/pycache` instead of the
+source tree. Running `pytest` straight from your shell bypasses them, so export it once per shell if
+you want the tree to stay clean:
+
+```bash
+export PYTHONPYCACHEPREFIX="$PWD/.venv/pycache"
+```
+
 The suite runs offline and needs no API keys: the markers `ollama` and `network` are deselected by
 default in `pyproject.toml`. To run them anyway:
 

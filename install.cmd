@@ -2,6 +2,8 @@
 rem Multi AI Orchestrator - installation (creates .venv and installs the package)
 setlocal
 cd /d "%~dp0"
+rem Keep __pycache__ out of the source tree without giving up the cache itself.
+if not defined PYTHONPYCACHEPREFIX set "PYTHONPYCACHEPREFIX=%~dp0.venv\pycache"
 
 where uv >nul 2>nul
 if %ERRORLEVEL%==0 (

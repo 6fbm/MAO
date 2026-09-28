@@ -7,5 +7,7 @@ if not exist "%MAO_ROOT%.venv\Scripts\python.exe" (
   exit /b 1
 )
 set "MAO_HOME=%MAO_ROOT%"
+rem Keep __pycache__ out of the source tree without giving up the cache itself.
+if not defined PYTHONPYCACHEPREFIX set "PYTHONPYCACHEPREFIX=%MAO_ROOT%.venv\pycache"
 "%MAO_ROOT%.venv\Scripts\python.exe" -m mao %*
 exit /b %ERRORLEVEL%

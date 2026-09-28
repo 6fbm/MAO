@@ -4,6 +4,8 @@ set -euo pipefail
 cd -- "$(dirname -- "$0")"
 
 PY=".venv/bin/python"
+# Keep __pycache__ out of the source tree without giving up the cache itself.
+export PYTHONPYCACHEPREFIX="${PYTHONPYCACHEPREFIX:-$PWD/.venv/pycache}"
 
 if [ -d ".venv" ] && [ ! -x "$PY" ]; then
   if [ -d ".venv/Scripts" ]; then

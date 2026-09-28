@@ -36,6 +36,9 @@ All notable changes to this project are documented in this file. The format is b
   would have failed with an API error. The trim now drops whole exchanges.
 
 ### Changed
+- The launchers set `PYTHONPYCACHEPREFIX` to `.venv/pycache`, so `__pycache__` folders no longer
+  appear all over the source tree. The cache is kept, only its location moves - deleting the
+  folders had no lasting effect before, because any Python run recreated them.
 - The project is English-only: the README, the documentation, the configuration templates and
   every user-facing string in the CLI were translated from German. `response_language` now
   defaults to `English`; set it back to any language you want your agents to answer in.
