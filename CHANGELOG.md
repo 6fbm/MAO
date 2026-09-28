@@ -7,6 +7,9 @@ All notable changes to this project are documented in this file. The format is b
 ## [Unreleased]
 
 ### Added
+- `/chat [<model>]`: a direct conversation with a single model, without planning, agents or a session.
+  The prompt shows the model while a chat runs, every reply reports tokens and cost, and `chat reset`,
+  `chat model <ref>` and `chat off` steer it.
 - The interactive shell takes commands without the leading slash: `clear`, `status`,
   `agents add 3x gpt coder`, `git status`. A command name followed by free text is still planned as a
   task, so `run the tests` keeps working as a task while `run` resumes a session. Tab completion now

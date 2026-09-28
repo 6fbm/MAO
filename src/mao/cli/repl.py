@@ -13,6 +13,8 @@ from prompt_toolkit.document import Document
 from rich.text import Text
 
 from mao.cli.commands import REGISTRY, CommandContext, split_args
+from mao.cli.commands.chat import ChatState
+from mao.cli.commands.chat import send as send_chat
 from mao.cli.commands.base import preview_manager
 from mao.cli.render import agent_overview, banner, plan_view, provider_overview, result_view
 from mao.core.errors import MaoError
@@ -62,6 +64,7 @@ class Repl:
         self.background: asyncio.Task | None = None  # type: ignore[type-arg]
         self.background_kind: str | None = None
         self.should_exit = False
+        self.chat: ChatState | None = None
         self.context = CommandContext(self)
 
     # ------------------------------------------------------------------ startup
@@ -99,7 +102,9 @@ class Repl:
     def _prompt_text(self) -> str:
         srt = self.app.orchestrator.active
         suffix = ""
-        if self.background is not None and not self.background.done():
+        if self.chat is not None:
+            suffix = f"(chat:{self.chat.model_ref})"
+        elif self.background is not None and not self.background.done():
             suffix = " ⏸"
         elif srt is not None:
             suffix = f" #{srt.session.id}"
@@ -134,7 +139,15 @@ class Repl:
         if not text:
             return
         if not text.startswith("/"):
-            text = self.as_command(text) or "/plan " + text
+            resolved = self.as_command(text)
+            if resolved is None and self.chat is not None:
+                # Inside a chat, free text is a message - not a new task.
+                try:
+                    await send_chat(self.context, text)
+                except MaoError as exc:
+                    self.ui.error(str(exc))
+                return
+            text = resolved or "/plan " + text
         name, _, raw = text[1:].partition(" ")
         spec = REGISTRY.get(name)
         if spec is None:

@@ -114,7 +114,7 @@ and all logs and sessions are created exactly as in normal operation.
 
 | Area | Commands |
 |---|---|
-| Tasks | `/plan <task>` · `/plan show` · `/replan <feedback>` · `/run [session]` (`/go`) · `/pause` · `/resume` · `/stop` · `/debate <question>` |
+| Tasks | `/plan <task>` · `/plan show` · `/replan <feedback>` · `/run [session]` (`/go`) · `/pause` · `/resume` · `/stop` · `/debate <question>` · `/chat [model]` |
 | Agents | `/agents` · `/agents add [Nx] <model> <role> [--name N]` · `/agents remove <name>` · `/agents show <name>` · `/agents set <name> <field> <value>` · `/agents roles` |
 | Models | `/providers` · `/providers test [name]` · `/providers key add\|list\|remove <provider>` · `/providers enable\|disable <name>` · `/models [provider]` · `/models discover [provider]` · `/models info <ref>` |
 | Usage | `/tokens` · `/cost` · `/max-tokens <n\|none>` · `/max-cost <usd\|none>` · `/max-agents <n>` · `/max-rounds <n>` · `/max-parallel <n>` |
@@ -128,6 +128,21 @@ just as well as their slashed forms, so the shell behaves like a console rather 
 Anything that is not a command is planned as a task, and a command name followed by free text stays a
 task - `run the tests` plans work, `run` resumes a session. Use `/plan <text>` to force a task and
 `/run` to force the command. Tab completes commands and subcommands, with or without the slash.
+
+### Chatting with one model
+
+Sometimes you do not want a plan and a team of agents, just an answer:
+
+```text
+mao › chat ollama/qwen3:4b
+mao(chat:ollama/qwen3:4b) › what does this regex do?
+…
+mao(chat:ollama/qwen3:4b) › chat off
+```
+
+While a chat runs, the prompt shows the model and everything you type goes to it. Commands still work,
+so `chat reset` forgets the conversation, `chat model <ref>` switches model and `chat off` leaves.
+Each reply reports the tokens and the cost of the turn plus the running total.
 
 ### Live view
 
