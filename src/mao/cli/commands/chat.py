@@ -10,7 +10,7 @@ from rich.text import Text
 from mao.cli.commands.base import CommandContext, command
 from mao.core.errors import MaoError
 from mao.core.text import fmt_cost, fmt_int
-from mao.core.types import ChatMessage, CompletionRequest
+from mao.core.types import ChatMessage, CompletionRequest, MessageRole
 from mao.providers.gateway import LLMGateway
 from mao.tokens.tracker import UsageTracker
 
@@ -31,8 +31,18 @@ class ChatState:
     turns: int = 0
 
     def trim(self) -> None:
-        if len(self.history) > MAX_HISTORY_MESSAGES:
-            self.history = self.history[-MAX_HISTORY_MESSAGES:]
+        """Drop the oldest exchanges, never leaving a reply without its question.
+
+        Anthropic and Gemini reject a history that does not start with a user
+        message, so the cut moves forward to the next one instead of slicing
+        blindly.
+        """
+        if len(self.history) <= MAX_HISTORY_MESSAGES:
+            return
+        cut = len(self.history) - MAX_HISTORY_MESSAGES
+        while cut < len(self.history) and self.history[cut].role is not MessageRole.USER:
+            cut += 1
+        self.history = self.history[cut:]
 
 
 def _first_available(app: AppContext) -> str:

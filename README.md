@@ -129,36 +129,6 @@ Anything that is not a command is planned as a task, and a command name followed
 task - `run the tests` plans work, `run` resumes a session. Use `/plan <text>` to force a task and
 `/run` to force the command. Tab completes commands and subcommands, with or without the slash.
 
-### Local model files
-
-Drop a `.gguf` file into `models/` and hand it to Ollama:
-
-```text
-mao › models local                              what is in the folder
-mao › models import Qwen3-4B-Q4_K_M.gguf        register it with Ollama
-mao › chat ollama/qwen3-4b-q4_k_m               talk to it
-```
-
-The import runs `ollama create`, which copies the weights into Ollama's own store - the file is held
-twice until you delete it from `models/`. Ollama has to be installed for this; models pulled with
-`ollama pull` work without the folder. `models/` is not versioned, model files are far too large for a
-repository.
-
-### Chatting with one model
-
-Sometimes you do not want a plan and a team of agents, just an answer:
-
-```text
-mao › chat ollama/qwen3:4b
-mao(chat:ollama/qwen3:4b) › what does this regex do?
-…
-mao(chat:ollama/qwen3:4b) › chat off
-```
-
-While a chat runs, the prompt shows the model and everything you type goes to it. Commands still work,
-so `chat reset` forgets the conversation, `chat model <ref>` switches model and `chat off` leaves.
-Each reply reports the tokens and the cost of the turn plus the running total.
-
 ### Live view
 
 During planning and execution the dashboard shows the phase, the active agents and what they are doing,
@@ -172,6 +142,21 @@ event feed (agent messages, tool calls, retries/fallbacks, approvals, decisions)
 | `D` | debug view (model calls, tool results, message contents) |
 | `M` | switch between events and agent communication |
 | `Ctrl+C` twice quickly | abort the program |
+
+## Chatting with one model
+
+Sometimes you do not want a plan and a team of agents, just an answer:
+
+```text
+mao › chat ollama/qwen3:4b
+mao(chat:ollama/qwen3:4b) › what does this regex do?
+…
+mao(chat:ollama/qwen3:4b) › chat off
+```
+
+While a chat runs, the prompt shows the model and everything you type goes to it. Commands still work,
+so `chat reset` forgets the conversation, `chat model <ref>` switches model and `chat off` leaves.
+Each reply reports the tokens and the cost of the turn plus the running total.
 
 ## Agents
 
@@ -230,6 +215,21 @@ Model IDs and prices live in `config/providers.yaml` (as of 2026-09-14) and can 
 `/models discover <provider>` reads the actually available models from the provider API. Local Ollama
 models are detected automatically at start (tool capability and context length via `/api/show`); models
 without native tool calling automatically use a text-based tool protocol.
+
+## Local model files
+
+Drop a `.gguf` file into `models/` and hand it to Ollama:
+
+```text
+mao › models local                              what is in the folder
+mao › models import Qwen3-4B-Q4_K_M.gguf        register it with Ollama
+mao › chat ollama/qwen3-4b-q4_k_m               talk to it
+```
+
+The import runs `ollama create`, which copies the weights into Ollama's own store - the file is held
+twice until you delete it from `models/`. Ollama has to be installed for this; models pulled with
+`ollama pull` work without the folder. `models/` is not versioned, model files are far too large for a
+repository.
 
 ## Security (short version)
 

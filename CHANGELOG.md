@@ -30,6 +30,11 @@ All notable changes to this project are documented in this file. The format is b
   `docs/SECURITY.md`.
 - English `README.md`.
 
+### Fixed
+- `/chat` cut its history without regard for whose turn it was, so from the 21st exchange on the
+  conversation started with an assistant message. Anthropic and Gemini reject that, and the chat
+  would have failed with an API error. The trim now drops whole exchanges.
+
 ### Changed
 - The project is English-only: the README, the documentation, the configuration templates and
   every user-facing string in the CLI were translated from German. `response_language` now
